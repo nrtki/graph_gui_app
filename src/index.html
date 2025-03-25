@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph GUI</title>
+    <style>
+        .grid-container {
+            width: 400px;
+            height: 400px;
+            border: 1px solid black;
+            position: relative;
+        }
+        .node {
+            cursor: pointer;
+        }
+        .footer {
+            margin-top: 10px;
+        }
+        .edge-input {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-container"></div>
+    <div class="footer">
+        <button>Add Node</button>
+        <div class="edge-input">
+            <label for="source-id">Source ID:</label>
+            <input type="text" id="source-id">
+            <label for="target-id">Target ID:</label>
+            <input type="text" id="target-id">
+            <button id="add-edge-button">Add Edge</button>
+            <button id="clear-board-button">Clear Board</button>
+        </div>
+    </div>
+    <script type="module" src="./main.js"></script>
+</body>
+</html>
