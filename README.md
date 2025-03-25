@@ -5,7 +5,7 @@ This template should help get you started developing with Tauri in vanilla HTML,
 ## Recommended IDE Setup
 
 - [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
-
+  
 ## Usage
 
 To use the app, follow these steps:
@@ -27,8 +27,8 @@ To use the app, follow these steps:
     npm run tauri dev
     ```
 5. Open the app in your browser or Tauri window.
-
-For more detailed instructions, refer to the [Tauri documentation](https://tauri.studio/docs/getting-started/intro).
+   
+For more detailed instructions, refer to the [Tauri documentation](https://tauri.studio/docs/getting-started/intro)
 
 ## ToDo
 - [ ] add template graph
