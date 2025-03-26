@@ -6,6 +6,8 @@
 use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
 use tauri::Manager;
+use rand::Rng;
+
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 struct Node {
@@ -121,9 +123,105 @@ fn clear_graph(state: tauri::State<GraphState>) {
     state.clear();
 }
 
+#[tauri::command]
+fn generate_complete_graph(state: tauri::State<GraphState>, num_nodes: usize) -> Result<(), String> {
+    let mut nodes = state.nodes.lock().unwrap();
+    let mut edges = state.edges.lock().unwrap();
+    let mut next_node_id = state.next_node_id.lock().unwrap();
+    let mut next_edge_id = state.next_edge_id.lock().unwrap();
+
+    nodes.clear();
+    edges.clear();
+    *next_node_id = 0;
+    *next_edge_id = 0;
+
+    for i in 0..num_nodes {
+        nodes.push(Node {
+            id: i,
+            x: (i as f64) * 50.0, // Example positioning
+            y: (i as f64) * 50.0,
+        });
+        *next_node_id += 1;
+    }
+
+    for i in 0..num_nodes {
+        for j in (i + 1)..num_nodes {
+            edges.push(Edge {
+                id: *next_edge_id,
+                source: i,
+                target: j,
+            });
+            *next_edge_id += 1;
+        }
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+fn align_graph(state: tauri::State<GraphState>) -> Result<(), String> {
+    let mut nodes = state.nodes.lock().unwrap();
+    let num_nodes = nodes.len();
+    if num_nodes == 0 {
+        return Ok(());
+    }
+
+    let radius = 150.0; // 円の半径
+    let center_x = 200.0; // 円の中心のX座標
+    let center_y = 200.0; // 円の中心のY座標
+
+    for (i, node) in nodes.iter_mut().enumerate() {
+        let angle = (i as f64) * (2.0 * std::f64::consts::PI / num_nodes as f64);
+        node.x = center_x + radius * angle.cos();
+        node.y = center_y + radius * angle.sin();
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+fn generate_random_graph(state: tauri::State<GraphState>, num_nodes: usize) -> Result<(), String> {
+    let mut nodes = state.nodes.lock().unwrap();
+    let mut edges = state.edges.lock().unwrap();
+    let mut next_node_id = state.next_node_id.lock().unwrap();
+    let mut next_edge_id = state.next_edge_id.lock().unwrap();
+
+    nodes.clear();
+    edges.clear();
+    *next_node_id = 0;
+    *next_edge_id = 0;
+
+    let mut rng = rand::thread_rng();
+
+    for i in 0..num_nodes {
+        nodes.push(Node {
+            id: i,
+            x: rng.gen_range(0.0..400.0), // ランダムな位置
+            y: rng.gen_range(0.0..400.0),
+        });
+        *next_node_id += 1;
+    }
+
+    for i in 0..num_nodes {
+        for j in (i + 1)..num_nodes {
+            if rng.gen_bool(0.5) { // ランダムにエッジを生成
+                edges.push(Edge {
+                    id: *next_edge_id,
+                    source: i,
+                    target: j,
+                });
+                *next_edge_id += 1;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+
 fn main() {
     tauri::Builder::default()
-        .manage(GraphState { // Removed Mutex::new() here
+        .manage(GraphState {
             nodes: Default::default(),
             edges: Default::default(),
             next_node_id: Mutex::new(0),
@@ -136,7 +234,10 @@ fn main() {
             get_graph,
             delete_node,
             delete_edge,
-            clear_graph
+            clear_graph,
+            generate_complete_graph,
+            align_graph,
+            generate_random_graph,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

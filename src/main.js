@@ -169,6 +169,79 @@ async function clearBoard() {
     }
 }
 
+// New function to generate complete graph
+async function generateCompleteGraph() {
+    const numNodesInput = document.getElementById("num-nodes");
+    const numNodes = parseInt(numNodesInput.value);
+
+    if (isNaN(numNodes) || numNodes <= 0) {
+        alert("Please enter a valid number of nodes.");
+        return;
+    }
+
+    try {
+        await invoke('generate_complete_graph', { numNodes });
+        loadGraph();
+        numNodesInput.value = "";
+    } catch (error) {
+        console.error("Error generating complete graph:", error);
+        alert("Error generating complete graph.");
+    }
+}
+
+// New function to align the graph
+async function alignGraph() {
+    try {
+        await invoke('align_graph');
+        loadGraph();
+    } catch (error) {
+        console.error("Error aligning graph:", error);
+        alert("Error aligning graph.");
+    }
+}
+
+// New function to generate random graph
+async function generateRandomGraph() {
+    const numNodesInput = document.getElementById("num-nodes-random");
+    const numNodes = parseInt(numNodesInput.value);
+
+    if (isNaN(numNodes) || numNodes <= 0) {
+        alert("Please enter a valid number of nodes.");
+        return;
+    }
+
+    try {
+        await invoke('generate_random_graph', { numNodes });
+        loadGraph();
+        numNodesInput.value = "";
+    } catch (error) {
+        console.error("Error generating random graph:", error);
+        alert("Error generating random graph.");
+    }
+}
+
+async function findMST() {
+    try {
+        const mstEdges = await invoke('find_mst');
+        highlightMSTEdges(mstEdges);
+    } catch (error) {
+        console.error("Error finding MST:", error);
+        alert("Error finding MST.");
+    }
+}
+
+function highlightMSTEdges(mstEdges) {
+    const svg = document.querySelector('.grid-container svg');
+    if (!svg) return;
+
+    mstEdges.forEach(edge => {
+        const line = svg.querySelector(`line[data-id='${edge.id}']`);
+        if (line) {
+            line.setAttribute('stroke', 'red');
+        }
+    });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     const addButton = document.querySelector('.footer button:nth-child(1)');
     const addEdgeButton = document.querySelector('#add-edge-button');
@@ -180,6 +253,29 @@ window.addEventListener('DOMContentLoaded', () => {
     const clearButton = document.querySelector('#clear-board-button'); // Assuming you have a button with this ID
     if (clearButton) {
         clearButton.addEventListener('click', clearBoard);
+    }
+
+    // Add event listener for the generate complete graph button
+    const generateCompleteGraphButton = document.querySelector('#generate-complete-graph-button');
+    if (generateCompleteGraphButton) {
+        generateCompleteGraphButton.addEventListener('click', generateCompleteGraph);
+    }
+
+    // Add event listener for the align graph button
+    const alignGraphButton = document.querySelector('#align-graph-button');
+    if (alignGraphButton) {
+        alignGraphButton.addEventListener('click', alignGraph);
+    }
+
+    // Add event listener for the generate random graph button
+    const generateRandomGraphButton = document.querySelector('#generate-random-graph-button');
+    if (generateRandomGraphButton) {
+        generateRandomGraphButton.addEventListener('click', generateRandomGraph);
+    }
+
+    const findMSTButton = document.querySelector('#find-mst-button');
+    if (findMSTButton) {
+        findMSTButton.addEventListener('click', findMST);
     }
     loadGraph();
 });
